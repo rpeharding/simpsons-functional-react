@@ -8,14 +8,27 @@ import { sortSimpsons } from "../utils";
 import Joi from "joi";
 
 const Interface = ({ simpsons, onDeleteItem, onLike, liked }) => {
-  const [userInput, setUserInput] = useState("");
+  const [userInput, setUserInput] = useState({ userSearch: "" });
   const [sortSelection, setSortSelection] = useState("");
   const [errors, setErrors] = useState({});
 
-  //   schema = { search: Joi.string().min(3).max(100) };
+  const schema = { search: Joi.string().min(3).max(100) };
 
-  const onInput = (e) => {
-    setUserInput(e.target.value);
+  const onInput = async (e) => {
+    const newState = { ...userInput, [e.target.id]: e.target.value };
+    setUserInput(newState);
+    const _joiInstance = Joi.object(schema);
+    // setUserInput(e.target.value);
+    try {
+      await _joiInstance.validateAsync(newState);
+      setErrors(undefined);
+    } catch (e) {
+      const errorsMod = {};
+      e.details.forEach((error) => {
+        errorsMod[error.context.key] = error.message;
+      });
+      setErrors(errorsMod);
+    }
   };
 
   const onSortSelection = (e) => {
@@ -25,16 +38,13 @@ const Interface = ({ simpsons, onDeleteItem, onLike, liked }) => {
   console.log(sortSelection);
 
   let filtered = [...simpsons];
-  if (userInput) {
+  if (userInput.userSearch) {
     filtered = filtered.filter((simpson) => {
-      return simpson.character.toLowerCase().includes(userInput.toLowerCase());
+      return simpson.character
+        .toLowerCase()
+        .includes(userInput.userSearch.toLowerCase());
     });
-    console.log(filtered);
   }
-
-  //   const liked = simpsons.filter((simpson) => {
-  //     return simpson.liked;
-  //   });
 
   const count = liked.length;
 
@@ -44,7 +54,12 @@ const Interface = ({ simpsons, onDeleteItem, onLike, liked }) => {
 
   return (
     <>
-      <Header onInput={onInput} userInput={userInput} liked={count} />
+      <Header
+        onInput={onInput}
+        userInput={userInput}
+        liked={count}
+        errors={errors}
+      />
       <Controls
         liked={count}
         className="controls"

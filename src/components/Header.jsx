@@ -2,7 +2,7 @@ import React from "react";
 import Nav from "./Nav";
 import homer from "../images/homer.png";
 
-const Header = ({ onInput, liked }) => {
+const Header = ({ onInput, liked, errors }) => {
   return (
     <header className="header">
       <Nav liked={liked} />
@@ -17,7 +17,7 @@ const Header = ({ onInput, liked }) => {
             placeholder="find a character"
             className="input"
           />
-          {/* <p>{this.props.errors.search}validation error</p> */}
+          <p>{errors.search}</p>
         </div>
       </div>
       <img className="hero-image" alt="homer with donut" src={homer} />
