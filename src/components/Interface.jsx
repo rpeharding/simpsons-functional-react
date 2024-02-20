@@ -6,9 +6,15 @@ import { useState } from "react";
 import Error from "./Error";
 import { sortSimpsons } from "../utils";
 import Joi from "joi";
+import { useLocalStorage } from "../hooks/storage";
 
 const Interface = ({ simpsons, onDeleteItem, onLike, liked }) => {
-  const [userInput, setUserInput] = useState({ userSearch: "" });
+  //   const [userInput, setUserInput] = useState({ search: "" });
+
+  const [userInput, setUserInput] = useLocalStorage({
+    key: "userInput",
+    initialValue: { search: "" },
+  });
   const [sortSelection, setSortSelection] = useState("");
   const [errors, setErrors] = useState({});
 
@@ -16,13 +22,20 @@ const Interface = ({ simpsons, onDeleteItem, onLike, liked }) => {
 
   const onInput = async (e) => {
     const newState = { ...userInput, [e.target.id]: e.target.value };
+
+    if (newState.search.includes("fck" || "sht")) {
+      setUserInput({ ...newState, search: "***" });
+      return;
+    }
+
     setUserInput(newState);
     const _joiInstance = Joi.object(schema);
-    // setUserInput(e.target.value);
+
     try {
       await _joiInstance.validateAsync(newState);
       setErrors(undefined);
     } catch (e) {
+      console.log(e);
       const errorsMod = {};
       e.details.forEach((error) => {
         errorsMod[error.context.key] = error.message;
@@ -38,11 +51,12 @@ const Interface = ({ simpsons, onDeleteItem, onLike, liked }) => {
   console.log(sortSelection);
 
   let filtered = [...simpsons];
-  if (userInput.userSearch) {
+
+  if (userInput.search) {
     filtered = filtered.filter((simpson) => {
       return simpson.character
         .toLowerCase()
-        .includes(userInput.userSearch.toLowerCase());
+        .includes(userInput.search.toLowerCase());
     });
   }
 
@@ -59,6 +73,7 @@ const Interface = ({ simpsons, onDeleteItem, onLike, liked }) => {
         userInput={userInput}
         liked={count}
         errors={errors}
+        search={userInput.search}
       />
       <Controls
         liked={count}

@@ -2,7 +2,7 @@ import React from "react";
 import Nav from "./Nav";
 import homer from "../images/homer.png";
 
-const Header = ({ onInput, liked, errors }) => {
+const Header = ({ onInput, liked, errors, search }) => {
   return (
     <header className="header">
       <Nav liked={liked} />
@@ -14,10 +14,11 @@ const Header = ({ onInput, liked, errors }) => {
             type="text"
             name="search"
             id="search"
+            value={search}
             placeholder="find a character"
             className="input"
           />
-          <p>{errors.search}</p>
+          <p>{errors && errors.search}</p>
         </div>
       </div>
       <img className="hero-image" alt="homer with donut" src={homer} />

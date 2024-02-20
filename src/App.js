@@ -8,9 +8,13 @@ import Liked from "./components/Liked";
 import InvalidUrl from "./components/InvalidUrl";
 import { Routes, Route } from "react-router-dom";
 import Nav from "./components/Nav";
+import { useLocalStorage } from "./hooks/storage";
 
 const App = () => {
-  const [simpsons, setSimpsons] = useState();
+  const [simpsons, setSimpsons] = useLocalStorage({
+    key: "simpsons",
+    initialValue: undefined,
+  });
 
   const getApiData = async () => {
     const { data } = await axios.get(
@@ -24,8 +28,10 @@ const App = () => {
   };
 
   useEffect(() => {
-    getApiData();
-  }, []);
+    if (!simpsons || simpsons.length === 0) {
+      getApiData();
+    }
+  }, [simpsons]);
 
   const onDeleteItem = (id) => {
     const simpsonCopy = [...simpsons];
@@ -41,7 +47,7 @@ const App = () => {
     setSimpsons(simpsonCopy);
   };
 
-  if (!simpsons) {
+  if (!simpsons || simpsons.length === 0) {
     return (
       <div className="spin-container">
         <img className="spinner" src={spinner} />
