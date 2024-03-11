@@ -9,8 +9,6 @@ import Joi from "joi";
 import { useLocalStorage } from "../hooks/storage";
 
 const Interface = ({ simpsons, onDeleteItem, onLike, liked }) => {
-  //   const [userInput, setUserInput] = useState({ search: "" });
-
   const [userInput, setUserInput] = useLocalStorage({
     key: "userInput",
     initialValue: { search: "" },
@@ -61,8 +59,6 @@ const Interface = ({ simpsons, onDeleteItem, onLike, liked }) => {
   }
 
   const count = liked.length;
-
-  //these will be the items to display (its the last thing I'm doing)
 
   let sorted = sortSimpsons(filtered, sortSelection);
 
